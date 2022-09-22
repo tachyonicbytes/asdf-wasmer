@@ -550,17 +550,6 @@ wasmer_verify_or_quit() {
   return 0
 }
 
-# determine install directory if required
-WASMER_DIR_VALUE=${WASMER_DIR:-}
-
-if [ ! -z $WASMER_DIR_VALUE ]; then
-  # If WASMER_DIR is not present
-  INSTALL_DIRECTORY="$HOME/.wasmer"
-else
-  # If WASMER_DIR is present
-  INSTALL_DIRECTORY="${WASMER_DIR}"
-fi
-
 #wasmer_install $1 # $2
 
 GH_REPO="https://github.com/wasmerio/wasmer/"
