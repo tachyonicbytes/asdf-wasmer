@@ -29,7 +29,8 @@ RELEASES_URL="https://github.com/wasmerio/wasmer/releases"
 WAPM_RELEASES_URL="https://github.com/wasmerio/wapm-cli/releases"
 
 WASMER_VERBOSE="verbose"
-if [ -z "$WASMER_INSTALL_LOG" ]; then
+WASMER_INSTALL_LOG_VALUE=${WASMER_INSTALL_LOG:-}
+if [ ! -z ${WASMER_INSTALL_LOG_VALUE} ]; then
   WASMER_INSTALL_LOG="$WASMER_VERBOSE"
 fi
 
