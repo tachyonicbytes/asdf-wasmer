@@ -29,10 +29,6 @@ RELEASES_URL="https://github.com/wasmerio/wasmer/releases"
 WAPM_RELEASES_URL="https://github.com/wasmerio/wapm-cli/releases"
 
 WASMER_VERBOSE="verbose"
-WASMER_INSTALL_LOG_VALUE=${WASMER_INSTALL_LOG:-}
-if [ ! -z ${WASMER_INSTALL_LOG_VALUE} ]; then
-  WASMER_INSTALL_LOG="$WASMER_VERBOSE"
-fi
 
 # utils.bash function
 sort_versions() {
@@ -108,19 +104,9 @@ wasmer_download_file() {
 
   # echo "Fetching $url.."
   if test -x "$(command -v curl)"; then
-    if [ "$WASMER_INSTALL_LOG" = "$WASMER_VERBOSE" ]; then
-      code=$(curl --progress-bar -w '%{http_code}' -L "$url" -o "$destination")
-      printf "\033[K\n\033[1A"
-    else
-      code=$(curl -s -w '%{http_code}' -L "$url" -o "$destination")
-    fi
+    code=$(curl -s -w '%{http_code}' -L "$url" -o "$destination")
   elif test -x "$(command -v wget)"; then
-    if [ "$WASMER_INSTALL_LOG" = "$WASMER_VERBOSE" ]; then
-      code=$(wget --show-progress --progress=bar:force:noscroll -q -O "$destination" --server-response "$url" 2>&1 | awk '/^  HTTP/{print $2}' | tail -1)
-      printf "\033[K\n\033[1A"
-    else
-      code=$(wget --quiet -O "$destination" --server-response "$url" 2>&1 | awk '/^  HTTP/{print $2}' | tail -1)
-    fi
+    code=$(wget --quiet -O "$destination" --server-response "$url" 2>&1 | awk '/^  HTTP/{print $2}' | tail -1)
   else
     wasmer_error "Neither curl nor wget was available to perform http requests."
     return 1
@@ -199,11 +185,6 @@ wasmer_link() {
       # else
       command printf "$LOAD_STR" >>"$WASMER_PROFILE"
       # fi
-      if [ "$WASMER_INSTALL_LOG" = "$WASMER_VERBOSE" ]; then
-        printf "we've added the following to your $WASMER_PROFILE\n"
-        echo "If you have a different profile please add the following:"
-        printf "$dim$LOAD_STR$reset"
-      fi
       wasmer_fresh_install=true
     else
       wasmer_warning "the profile already has Wasmer and has not been changed"
@@ -216,12 +197,6 @@ wasmer_link() {
 
     wasmer_install_status "check" "$version installed successfully ✓"
 
-    if [ "$WASMER_INSTALL_LOG" = "$WASMER_VERBOSE" ]; then
-      if [ "$wasmer_fresh_install" = true ]; then
-        printf "wasmer & wapm will be available the next time you open the terminal.\n"
-        printf "If you want to have the commands available now please execute:\n\nsource $INSTALL_DIRECTORY/wasmer.sh$reset\n"
-      fi
-    fi
   fi
   return 0
 }
@@ -265,27 +240,6 @@ wasmer_install() {
     printf "${reset}Welcome to the Wasmer bash installer!$reset\n"
   else
     printf "${reset}Welcome to the Wasmer bash installer!$reset\n"
-    if [ "$WASMER_INSTALL_LOG" = "$WASMER_VERBOSE" ]; then
-      printf "
-${magenta1}               ww
-${magenta1}               wwwww
-${magenta1}        ww     wwwwww  w
-${magenta1}        wwwww      wwwwwwwww
-${magenta1}ww      wwwwww  w     wwwwwww
-${magenta1}wwwww      wwwwwwwwww   wwwww
-${magenta1}wwwwww  w      wwwwwww  wwwww
-${magenta1}wwwwwwwwwwwwww   wwwww  wwwww
-${magenta1}wwwwwwwwwwwwwww  wwwww  wwwww
-${magenta1}wwwwwwwwwwwwwww  wwwww  wwwww
-${magenta1}wwwwwwwwwwwwwww  wwwww  wwwww
-${magenta1}wwwwwwwwwwwwwww  wwwww   wwww
-${magenta1}wwwwwwwwwwwwwww  wwwww
-${magenta1}   wwwwwwwwwwww   wwww
-${magenta1}       wwwwwwww
-${magenta1}           wwww
-${reset}
-"
-    fi
   fi
 
   wasmer_download $1 && wasmer_link
